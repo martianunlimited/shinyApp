@@ -1,0 +1,100 @@
+
+mtCarsPredictor
+========================================================
+author: Nick Lim
+date: 22/10/2015
+transition: rotate
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: 'Risque'
+
+A car Performance Predictor using the mtCars dataset
+
+Motivation
+========================================================
+
+Often time, it is difficult to estimate the performance of a car, This app is written to provide an estimate of the performance in terms of fuel efficiency, engine power, quarter mile time and size from the weight of the vehicle, number of cylinders, and transmission type 
+This app provides a simple user interface where users may adjust the weight and the chracteristic of the car, and visually see how the predicted performance fare against other vehicles in the market. 
+
+Linear Model
+========================================================
+
+```{r echo=FALSE}
+
+library(datasets)
+data("mtcars")
+mtcars$cyl=as.factor(mtcars$cyl)
+mtcars$am=as.factor(mtcars$am)
+```
+
+```{r echo=FALSE}
+fitMPG=lm(formula = mpg ~ wt * (am + cyl), data = mtcars)
+fitHP=lm(formula = hp ~ wt * (am + cyl), data = mtcars)
+fitQSEC=lm(formula = qsec ~ wt * (am + cyl), data = mtcars)
+fitDISP=lm(formula = disp ~ wt * (am + cyl), data = mtcars)
+coefMPG=coef(fitMPG);
+coefHP=coef(fitHP);
+coefQSEC=coef(fitQSEC);
+coefDISP=coef(fitDISP);
+coefs=coefMPG;
+```
+
+From our linear model we found the following performance metric 
+- fuel efficiency (in MPG) = `r sprintf("%0.2f + isManual * %0.2f + isCyl6 * %0.2f + isCyl8 * %0.2f + weight * (%0.2f + isManual * %0.2f + isCyl6 * %0.2f + isCyl8 * %0.2f)",coefMPG[1],coefMPG[3],coefMPG[4],coefMPG[5],coefMPG[2],coefMPG[6],coefMPG[7],coefMPG[8])`
+- Power (in HP) = `r sprintf("%0.2f + isManual * %0.2f + isCyl6 * %0.2f + isCyl8 * %0.2f + weight * (%0.2f + isManual * %0.2f + isCyl6 * %0.2f + isCyl8 * %0.2f)",coefHP[1],coefHP[3],coefHP[4],coefHP[5],coefHP[2],coefHP[6],coefHP[7],coefHP[8])`
+- Quarter Mile Time (in s) = `r sprintf("%0.2f + isManual * %0.2f + isCyl6 * %0.2f + isCyl8 * %0.2f + weight * (%0.2f + isManual * %0.2f + isCyl6 * %0.2f + isCyl8 * %0.2f)",coefQSEC[1],coefQSEC[3],coefQSEC[4],coefQSEC[5],coefQSEC[2],coefQSEC[6],coefQSEC[7],coefQSEC[8])`
+- Displacement (in cu In.) = `r sprintf("%0.2f + isManual * %0.2f + isCyl6 * %0.2f + isCyl8 * %0.2f + weight * (%0.2f + isManual * %0.2f + isCyl6 * %0.2f + isCyl8 * %0.2f)",coefDISP[1],coefDISP[3],coefDISP[4],coefDISP[5],coefDISP[2],coefDISP[6],coefDISP[7],coefDISP[8])`
+
+
+Interface and Layout
+========================================================
+![alt text](mtCarsPredictorInterface.png)
+***
+The Sidebar on the left provides a slider where the user may adjust the weight of the vehicle,
+a set of radio buttons for the transmission type, and another set of radio buttons for the number of cylinders
+
+This app can be previewed by clicking [here](https://martianunlimited.shinyapps.io/mtCarsPredictor)
+
+Sample Output (4 Cylinder, Automatic transmission, 2.5 tons)
+========================================================
+left: 20%
+***
+```{r, echo=FALSE}
+      y <- mtcars$mpg
+      x <- mtcars$wt
+      par(mfrow=c(2,2))
+      plotch=as.numeric(mtcars$cyl)
+      plot(x,y,col=mtcars$am,pch=plotch, ylab="Fuel Efficiency (mpg)", xlab="weight")
+      mpgParam=c(coefMPG[1],coefMPG[2],coefMPG[1]+2.5*coefMPG[2]);
+      points(2.5,mpgParam[3],pch=19,col="blue")
+      text(2.2,max(mtcars$mpg),sprintf("mpg = %0.2f",mpgParam[3]), col="blue")
+      abline(a=mpgParam[1],b=mpgParam[2])
+      legend("topright","Predicted",pch=19,col="blue")
+      plot(x,mtcars$hp,col=mtcars$am,pch=plotch, ylab="horsepower (hp)", xlab="weight")
+      
+      hpParam=c(coefHP[1],coefHP[2],coefHP[1]+2.5*coefHP[2]);
+      points(2.5,hpParam[3],pch=19,col="blue")
+      text(2.2,max(mtcars$hp),sprintf("hp = %0.2f",hpParam[3]), col="blue")
+      abline(a=hpParam[1],b=hpParam[2])
+      
+      legend("topright","Predicted",pch=19,col="blue")
+
+
+      y <- mtcars$qsec
+      x <- mtcars$wt
+      plotch=as.numeric(mtcars$cyl)
+      plot(x,y,col=mtcars$am,pch=plotch, ylab="Quarter Mile Time (s)", xlab="weight")
+      qsecParam=c(coefQSEC[1],coefQSEC[2],coefQSEC[1]+2.5*coefQSEC[2]);
+      points(2.5,mpgParam[3],pch=19,col="blue")
+      text(2.2,max(mtcars$qsec),sprintf("qsec = %0.2f",mpgParam[3]), col="blue")
+      abline(a=mpgParam[1],b=mpgParam[2])
+      legend("topright","Predicted",pch=19,col="blue")
+      plot(x,mtcars$disp,col=mtcars$am,pch=plotch, ylab="Displacement (cu in.)", xlab="weight")
+      
+      dispParam=c(coefDISP[1],coefDISP[2],coefDISP[1]+2.5*coefDISP[2]);
+      points(2.5,dispParam[3],pch=19,col="blue")
+      text(2.2,max(mtcars$disp),sprintf("disp = %0.2f",dispParam[3]), col="blue")
+      abline(a=dispParam[1],b=dispParam[2])
+      
+      legend("topright","Predicted",pch=19,col="blue")
+
+```

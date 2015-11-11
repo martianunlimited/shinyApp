@@ -1,0 +1,8 @@
+name: mtCarsPredictor
+account: martianunlimited
+server: shinyapps.io
+bundleId: 294869
+url: https://martianunlimited.shinyapps.io/mtCarsPredictor
+when: 1445553650.27298
+asMultiple: FALSE
+asStatic: FALSE
